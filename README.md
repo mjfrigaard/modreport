@@ -1,0 +1,50 @@
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+# modreport
+
+<!-- badges: start -->
+
+<!-- badges: end -->
+
+The goal of `modreport` is to demo a [Shiny
+application](https://shiny.posit.co/) with a downloadable report
+rendered with [R Markdown](https://rmarkdown.rstudio.com/).
+
+## Installation
+
+You can install the development version of `modreport` from
+[GitHub](https://github.com/) with:
+
+``` r
+# install.packages("pak")
+pak::pak("mjfrigaard/modreport")
+```
+
+## Run App
+
+Run the application using:
+
+``` r
+library(modreport)
+launch_app()
+```
+
+## Structure
+
+``` sh
+█─launch_app # standalone app function
+├─█─create_report_template_content # returns the template as a string
+├─█─app_ui # application UI
+│ ├─█─mod_input_ui # collects user inputs
+│ ├─█─mod_download_report_ui # downloads report from .Rmd template
+│ ├─█─mod_graph_output_ui # ggplot2 graph outputs
+│ └─█─mod_table_output_ui # table output
+└─█─app_server # application server
+  ├─█─mod_input_server # collects user inputs
+  ├─█─mod_download_report_server # downloads report from .Rmd template
+  │ ├─█─create_report_template # generates the .Rmd template programmatically
+  │ └─█─create_error_report # generates a user-friendly error page 
+  ├─█─mod_graph_output_server # ggplot2 graph outputs
+  └─█─mod_table_output_server # table output
+```
