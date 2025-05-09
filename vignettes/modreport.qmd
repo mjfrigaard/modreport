@@ -1,0 +1,105 @@
+---
+title: "modreport"
+format: 
+  html:
+    toc: true
+    toc-depth: 4
+knitr:
+  opts_chunk: 
+    collapse: true
+    comment: "" 
+
+execute:
+  echo: false
+
+vignette: >
+  %\VignetteIndexEntry{modreport}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r}
+#| label: setup
+#| echo: true
+library(modreport)
+library(lobstr)
+```
+
+```{r}
+fs::dir_tree("../R")
+```
+
+
+## App structure
+
+The standalone app file (`launch_app()`) calls the `app_ui()` and `app_server()`:
+
+```{r}
+#| label: full-app
+lobstr::ast(
+  launch_app(
+    app_ui(),
+    app_server()
+  )
+)
+```
+
+## Modules 
+
+The module files: 
+
+1. `R/mod_input.R`: collects user inputs        
+2. `R/mod_download_report.R`: downloads report from .Rmd template       
+3. `R/mod_graph_output.R`: `ggplot2` graph outputs   
+4. `R/mod_table_output.R`: table output      
+
+
+```{r}
+lobstr::ast(
+  launch_app(
+    app_ui(
+      mod_input_ui(),
+      mod_download_report_ui(),
+      mod_graph_output_ui(),
+      mod_table_output_ui()
+    ),
+    app_server(
+      mod_input_server(),
+      mod_download_report_server(),
+      mod_graph_output_server(),
+      mod_table_output_server()
+    )
+  )
+)
+```
+
+## Utility functions
+
+The utility functions:
+
+1. `R/create_report_template_content.R`: returns the template as a string      
+2. `R/create_report_template.R`: generates the R Markdown template programmatically     
+3. `R/create_error_report.R`: generates a user-friendly error page if the report fails
+
+```{r}
+lobstr::ast(
+  launch_app(
+    create_report_template_content(),
+    app_ui(
+      mod_input_ui(),
+      mod_download_report_ui(),
+      mod_graph_output_ui(),
+      mod_table_output_ui()
+    ),
+    app_server(
+      mod_input_server(),
+      mod_download_report_server(
+        create_report_template(),
+        create_error_report()
+      ),
+      mod_graph_output_server(),
+      mod_table_output_server()
+    )
+  )
+)
+```
