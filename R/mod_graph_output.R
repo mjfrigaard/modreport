@@ -69,8 +69,7 @@ mod_graph_output_server <- function(id, data, inputs) {
         logger = logger_id
       )
 
-      tryCatch(
-        {
+      tryCatch({
           p <- ggplot2::ggplot(
             filtered_data(),
             ggplot2::aes_string(
@@ -106,8 +105,7 @@ mod_graph_output_server <- function(id, data, inputs) {
               label = paste("Error rendering plot:", e$message)
             ) +
             ggplot2::theme_void()
-        }
-      )
+        })
     })
   })
 }

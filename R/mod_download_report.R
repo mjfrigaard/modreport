@@ -33,12 +33,13 @@ mod_download_report_ui <- function(id) {
 #' @export
 mod_download_report_server <- function(id, data, inputs) {
   moduleServer(id, function(input, output, session) {
-    # Set up module-specific logger
+    # module-specific logger
     logger::log_layout(logger::layout_glue_colors)
     logger_id <- paste0("report_module_", id)
     logger::log_threshold(logger::INFO)
 
     output$download_report <- downloadHandler(
+
       filename = function() {
         filename <- paste0("penguin-report-", format(Sys.time(), "%Y-%m-%d-%H%M%S"), ".html")
         logger::log_info("Generating report with filename: {filename}",
@@ -46,9 +47,10 @@ mod_download_report_server <- function(id, data, inputs) {
         )
         return(filename)
       },
+
       content = function(file) {
-        # Instead of using the package system.file approach directly, we'll
         # create the template file programmatically to ensure it exists
+        # in case the system.file() approach doesn't work
         temp_dir <- tempdir()
         logger::log_info("Using temporary directory: {temp_dir}",
           logger = logger_id
@@ -59,7 +61,7 @@ mod_download_report_server <- function(id, data, inputs) {
           logger = logger_id
         )
 
-        # Check if the package is installed and attempt to find the template
+        # attempt to find the template in inst/rmd/
         if (file.exists(system.file(package = "modreport"))) {
           template_path <- system.file("rmd", "report_template.Rmd", package = "modreport")
           logger::log_info("Template path from system.file: {template_path}",
@@ -110,18 +112,20 @@ mod_download_report_server <- function(id, data, inputs) {
         )
 
         # Render the report
-        tryCatch(
-          {
+        tryCatch({
             rmarkdown::render(
               input = temp_report,
               output_file = file,
               params = params,
               envir = new.env(parent = globalenv())
             )
+
             logger::log_info("Report successfully rendered to: {file}", logger = logger_id)
-          },
-          error = function(e) {
+
+            }, error = function(e) {
+
             logger::log_error("Error rendering report: {e$message}", logger = logger_id)
+
             # Create a simple error report instead
             create_error_report(file, e$message, params)
           }
